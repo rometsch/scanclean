@@ -56,6 +56,7 @@ def pageOrientation(page):
 parser = argparse.ArgumentParser()
 parser.add_argument("input", help="Input file containing A4 pages")
 parser.add_argument("--out", help="Output file")
+parser.add_argument("--offset", type=int, help="Controle the number of empty pages at front")
 args = parser.parse_args()
 
 infile_path = args.input
@@ -85,6 +86,10 @@ if Nempty == 0:
     NemptyAtEnd = 0
 else:
     NemptyAtEnd = Nempty - NemptyAtBegin
+
+if args.offset:
+    NemptyAtEnd -= args.offset
+    NemptyAtBegin += args.offset
 
 print("number of empty pages at start/end = {}, {}".format(NemptyAtBegin, NemptyAtEnd))
 
