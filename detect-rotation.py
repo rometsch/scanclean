@@ -12,7 +12,7 @@ def main():
     parser.add_argument('-v', '--verbose', default=False, action="store_true")
     parser.add_argument('-c', '--correction', default=False,
                         action='store_true',
-                        help="Output the angle to correct the image, i.e. the rotation angle time -1")
+                        help="Output the angle to correct the image, i.e. the rotation angle times -1")
     args = parser.parse_args()
 
     rotation = get_rotation(args.file, ret_img=True,
