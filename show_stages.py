@@ -5,8 +5,12 @@ import matplotlib.image as mpimg;
 import matplotlib.pyplot as plt;
 import numpy as np;
 import argparse;
+import tempfile
 
-convert_cmd = ["gm","convert"];
+#convert_cmd = ["gm","convert"];
+convert_cmd = ["convert"]
+magick_cmd = "convert"
+
 
 cwd = os.getcwd();
 
@@ -20,7 +24,7 @@ def rotate(files , angle):
 	call( convert_cmd + [ files["in"], "rotate", angle, files["out"]] );
 
 def scale(files, percentage = 400, filter=None):
-	cmd = ["magick", files["in"], "-magnify", files["out"]];
+	cmd = [magick_cmd, files["in"] , "-magnify", "-colorspace", "Gray", files["out"]];
 	call(cmd);
 
 """ Construct an image which is used by image magick to map the colors imitating the GIMP color curve feature. """
@@ -71,6 +75,8 @@ parser.add_argument("-i","--inputfile", default = os.path.join(cwd, "testfield.p
 parser.add_argument("-c","--cutoff", default = "0.8", help="position of the soft cutoff");
 parser.add_argument("-w","--width", default = "0.015" , help="width of the soft cut off");
 parser.add_argument("-f","--filter", default = "Cubic" , help="interpolation method");
+parser.add_argument("-s","--show", default=False, action="store_true", help="Show a mosaic of images with the different substeps. Usefull to determine cutoff and width.")
+parser.add_argument("--keep-temp", default=False, action="store_true", help="Keep the temp dir and print its path")
 args = parser.parse_args();
 
 width = args.width;
@@ -83,13 +89,14 @@ filename_in = os.path.basename(in_path);
 filename_parts = filename_in.rsplit(".",2);
 basename = filename_parts[0];
 extension = filename_parts[1];
+tmpdir = tempfile.mkdtemp()
 
 """ Define the stages of processing. """
 stages = {	"scale"		: { "suffix" : "scale"	,	"function" : lambda files : scale(files, filter = args.filter)	},
 		"contrast"	: { "suffix" : "contrast",	"function" : lambda files : enhance_contrast(files, args.cutoff, args.width) } };
 """ Make filenames for the temporary file for every stage. """
 for st in stages:
-	stages[st]["filename"] = "{}_{}.{}".format(basename, st, extension);
+	stages[st]["filename"] = "{}/{}_{}.{}".format(tmpdir,basename, st, extension);
 
 """ Make a list to set in which order to apply the stages. """
 stages_order = ["scale", "contrast"];
@@ -108,4 +115,11 @@ for st in stages_order:
 	files.append(filename);
 	labels.append(st);
 
-show_images(files, "cutoff = {}, width = {}".format( args.cutoff, args.width))
+if args.show:
+    show_images(files, "cutoff = {}, width = {}".format( args.cutoff, args.width))
+
+if args.keep_temp:
+    print("Tempdir was {}".format(tmpdir))
+else:
+	call(["rm", "-rf", tmpdir], cwd=cwd);
+    
