@@ -91,6 +91,10 @@ if args.offset:
     NemptyAtEnd -= args.offset
     NemptyAtBegin += args.offset
 
+if Nsheets == 1:
+    NemptyAtBegin = 0
+    NemptyAtEnd = 0
+
 print("number of empty pages at start/end = {}, {}".format(NemptyAtBegin, NemptyAtEnd))
 
 pages = []
@@ -106,21 +110,24 @@ print("pages = ", pages)
 # shuffle pages for brochure
 s = int(Ntot/2)
 
-pages_order = [-1]*Ntot
-for i in range(1,Nsheets+1):
-    b = [0]*4
-    b[0] = s + 2 - 2*i
-    b[1] = s - 1 + 2*i
-    b[2] = s + 2*i
-    b[3] = s + 1 - 2*i
-    print("b = ",b)
-    for j in range(1,5):
-        index = 4*(i-1)+(j-1)
-        print("index = ", index)
-        print("b[j-1] = ", b[j-1])
-        print("j = ",j)
-        n =  pages[b[j-1]-1]
-        pages_order[index] = n
+if Nsheets == 1:
+    pages_order = [0, 1]
+else:
+    pages_order = [-1]*Ntot
+    for i in range(1,Nsheets+1):
+        b = [0]*4
+        b[0] = s + 2 - 2*i
+        b[1] = s - 1 + 2*i
+        b[2] = s + 2*i
+        b[3] = s + 1 - 2*i
+        print("b = ",b)
+        for j in range(1,5):
+            index = 4*(i-1)+(j-1)
+            print("index = ", index)
+            print("b[j-1] = ", b[j-1])
+            print("j = ",j)
+            n =  pages[b[j-1]-1]
+            pages_order[index] = n
 
 is_first_subpage = True
 for n in pages_order:
