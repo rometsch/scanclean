@@ -91,7 +91,7 @@ if args.offset:
     NemptyAtEnd -= args.offset
     NemptyAtBegin += args.offset
 
-if Nsheets == 1:
+if Npages == 2:
     NemptyAtBegin = 0
     NemptyAtEnd = 0
 
@@ -110,7 +110,7 @@ print("pages = ", pages)
 # shuffle pages for brochure
 s = int(Ntot/2)
 
-if Nsheets == 1:
+if Npages == 2:
     pages_order = [0, 1]
 else:
     pages_order = [-1]*Ntot
