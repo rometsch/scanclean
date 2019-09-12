@@ -1,14 +1,17 @@
 #!/usr/bin/env bash
 
-for IMG in $1/*.png; do
-	NAME="${IMG%.*}"
-	convert -page A4 \
-	       	-border 300 \
-	       	-bordercolor white \
-	       	-monochrome \
-		-compress Group4 \
-		"$IMG" tmp.png
-	convert -page A4 \
-		tmp.png $NAME.pdf
-	rm tmp.png
-done
+TMPDIR="$(mktemp -d)"
+TMPFILE="$TMPDIR/tmp.png"
+
+IMG="$1"
+NAME="${IMG%.*}"
+#convert "$IMG" -page A4 -gravity center -stroke white -bordercolor white -border 300 "$TMPFILE"
+convert -border 300 \
+		-bordercolor white \
+		"$IMG" "$TMPFILE"
+	    #-monochrome \
+		#-compress Group4
+convert -page A4 -format pdf "$TMPFILE"  "$NAME.pdf"
+
+#rm -rf $TMPDIR
+echo "png2pdf $TMPDIR"
