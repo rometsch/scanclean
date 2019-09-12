@@ -56,7 +56,7 @@ def pageOrientation(page):
 parser = argparse.ArgumentParser()
 parser.add_argument("input", help="Input file containing A4 pages")
 parser.add_argument("--out", help="Output file")
-parser.add_argument("--offset", type=int, help="Controle the number of empty pages at front")
+parser.add_argument("--offset", type=int, help="Control the number of empty pages at front")
 args = parser.parse_args()
 
 infile_path = args.input
