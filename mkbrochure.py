@@ -17,7 +17,7 @@ def showPDFonNewPage(page, src, pno, pos):
 
 
     if spage.rotation == 0:
-        page.showPDFpage(rect, src, pno)
+        page.show_pdf_page(rect, src, pno)
     else:
 
         # This handles images where the image is not stored as displayed, but the page rotation is set.
@@ -65,10 +65,10 @@ outfile_path = args.out if args.out is not None else ".".join(infile_path.split(
 doc = fitz.open()
 
 pagesize="A3-L" # landscape A3 page
-width, height = fitz.PaperSize(pagesize)
+width, height = fitz.paper_size(pagesize)
 
 src = fitz.open(infile_path)
-Npages = src.pageCount
+Npages = src.page_count
 print("pages in input = ", Npages)
 
 # find the correct page ordering for the brochure
@@ -130,13 +130,13 @@ else:
             pages_order[index] = n
 
 is_first_subpage = True
-for n in pages_order:
+for k, n in enumerate(pages_order):
     is_empty_page = n < 0 # by convetion the empty pages were assigend a -1
-    is_save_incremental = doc.pageCount > 0 # save incremental after first page
+    is_save_incremental = (doc.page_count > 0) and (k>0) # save incremental after first page
     if is_first_subpage:
         pos = 1
         is_first_subpage = False
-        page = doc.newPage(-1, width = width, height = height)
+        page = doc.new_page(-1, width = width, height = height)
     else:
         pos = 2
         is_first_subpage = True
@@ -145,9 +145,7 @@ for n in pages_order:
     if not is_empty_page:
         showPDFonNewPage(page, src, n, pos=pos)
 
-    doc.save(outfile_path,
-             #garbage = 4, # eliminate duplicate objects
-             deflate = True, # compress stuff where possible
-             incremental=is_save_incremental)
-
-    doc = fitz.open(outfile_path)
+doc.save(outfile_path,
+            #garbage = 4, # eliminate duplicate objects
+            deflate = True, # compress stuff where possible
+            incremental=False)
